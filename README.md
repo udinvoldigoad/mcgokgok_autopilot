@@ -102,6 +102,33 @@ MCG_AutoPlay/
 ├── BattleBridgeHelper.cs   # MCBattleData bridge wrappers (shop, level-up, GoGo)
 ├── Il2CppGameAccess.cs     # Reflection-based Il2Cpp member/method access layer
 ├── Il2CppNativeTypes.cs    # Il2Cpp type resolution with caching and pointer fallback
+│
+├── Core/                   # Plain GameState (no IL2CPP/MelonLoader dependency)
+│   ├── GameState.cs        # State lengkap pemain (player, shop, board, bench, synergy)
+│   ├── PlayerState.cs      # HP / Gold / Level / Exp / Round / streak
+│   ├── ShopState.cs        # 5 slot shop
+│   ├── HeroState.cs        # id / name / cost / star
+│   ├── BoardState.cs       # hero + posisi di board
+│   ├── BenchState.cs       # hero cadangan
+│   └── SynergyState.cs     # synergy aktif
+│
+├── Infrastructure/         # Reflection cache + safe access (PRD Phase 4)
+│   └── ReflectionCache.cs  # Cache Type/Method/Field agar tidak resolusi tiap tick
+│
+├── Game/                   # GameStateReader (PRD Phase 5)
+│   └── GameStateReader.cs  # Isi GameState dari game (round terbukti; lain TODO)
+│
+├── Actions/                # Action layer (PRD Phase 6)
+│   ├── Decision.cs         # Keputusan sebagai aksi konkret
+│   └── ActionExecutor.cs   # Decision -> Game API (via BattleBridgeHelper)
+│
+├── AI/                     # Decision engine (PRD Phase 7/8)
+│   └── DecisionEngine.cs   # Economy AI dasar (interest / HP rendah / roll)
+│
+├── Tests/                  # Proyek test tanpa MelonLoader (net8)
+│   ├── Core.Tests/         # Validasi Core/ (plain C#)
+│   └── Infra.Tests/        # Validasi Core/ + Infrastructure/ + Game/ + Actions/ + AI/
+│
 └── MCG_AutoPlay.csproj
 ```
 

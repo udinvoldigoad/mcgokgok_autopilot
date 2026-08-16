@@ -43,4 +43,51 @@ internal static class BattleBridgeHelper
         var bridge = GetBridge();
         Il2CppGameAccess.Invoke(bridge, "KeyBoardOpenShop");
     }
+
+    // --- ActionExecutor bridge ---
+
+    internal static bool InvokeShopSelect(int index)
+    {
+        var bridge = GetBridge();
+        if (bridge == null)
+            return false;
+        Il2CppGameAccess.Invoke(bridge, "KeyBoardShopSelect", index, DefaultShopSelectType);
+        return true;
+    }
+
+    internal static bool InvokeRefreshShop()
+    {
+        var bridge = GetBridge();
+        if (bridge == null)
+            return false;
+        Il2CppGameAccess.Invoke(bridge, "KeyBoardRefreshShop");
+        return true;
+    }
+
+    internal static bool InvokeLevelUp()
+    {
+        var bridge = GetBridge();
+        if (bridge == null)
+            return false;
+        Il2CppGameAccess.Invoke(bridge, "KeyBoardLevelUp");
+        return true;
+    }
+
+    internal static bool InvokeSell(int index)
+    {
+        var bridge = GetBridge();
+        if (bridge == null)
+            return false;
+        Il2CppGameAccess.Invoke(bridge, "KeyBoardSell", index);
+        return true;
+    }
+
+    internal static bool InvokeLockShop()
+    {
+        var bridge = GetBridge();
+        if (bridge == null)
+            return false;
+        Il2CppGameAccess.Invoke(bridge, "KeyBoardLockShop");
+        return true;
+    }
 }
