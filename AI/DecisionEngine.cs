@@ -5,57 +5,47 @@ namespace MCG_AutoPlay.AI;
 
 /// <summary>
 /// Mengambil GameState dan menghasilkan Decision. Murni logika, tanpa akses game.
-/// (PRD Phase 7/8: Economy AI).
-///
-/// Aturan awal (PRD Phase 8):
-///   Gold >= 30          -> prioritaskan interest (simpan)
-///   HP rendah           -> belanjakan gold
-///   Board kuat          -> simpan
-///   Board lemah         -> roll
-///   Dekat level breakpoint -> pertimbangkan level up
+/// (PRD Phase 7). Mengorkestrasi:
+///   - EconomyScoring (Phase 8)
+///   - ShopDecision  (Phase 9)
+///   - SynergyDecision (Phase 10)
 /// </summary>
 internal static class DecisionEngine
 {
-    private const int InterestThreshold = 30;
-    private const int LowHpThreshold = 30;
+    /// <summary>Definisi hero statis (isi saat mapping dump tersedia).</summary>
+    private static readonly Dictionary<int, HeroDefinition> HeroDefs = new();
 
     internal static Decision Decide(GameState state)
     {
-        var player = state.Player;
-        var reason = "";
+        var economy = EconomyScoring.Evaluate(state);
 
-        // Cari hero yang cocok di shop untuk dibeli (placeholder sederhana:
-        // beli hero cost tinggi saat gold melimpah).
-        if (player.Gold >= InterestThreshold)
+        switch (economy.Action)
         {
-            // Prioritaskan beli yang upgrade-able bila ada
-            for (var i = 0; i < state.Shop.AvailableCount; i++)
-            {
-                var hero = state.Shop.Slots[i];
-                if (hero != null && hero.Cost >= 3 && player.Gold - hero.Cost >= InterestThreshold)
-                {
-                    return Decision.Buy(i, $"High-value hero cost {hero.Cost}, gold {player.Gold}");
-                }
-            }
+            case EconomyAction.Save:
+                return Decision.None(economy.Reason);
 
-            return Decision.None($"Gold {player.Gold} >= {InterestThreshold}: hold for interest");
+            case EconomyAction.Roll:
+                // Coba beli dulu kalau ada hero layak; jika tidak, roll.
+                var buySlot = ShopDecision.BestBuySlot(state, HeroDefs);
+                if (buySlot >= 0 && state.Shop.Slots[buySlot].Cost <= state.Player.Gold)
+                    return Decision.Buy(buySlot, $"Buy before roll: {economy.Reason}");
+                return Decision.Refresh(economy.Reason);
+
+            case EconomyAction.LevelUp:
+                return Decision.LevelUp(economy.Reason);
+
+            case EconomyAction.Buy:
+                buySlot = ShopDecision.BestBuySlot(state, HeroDefs);
+                if (buySlot >= 0)
+                    return Decision.Buy(buySlot, economy.Reason);
+                return Decision.None(economy.Reason);
+
+            default:
+                return Decision.None(economy.Reason);
         }
-
-        if (player.Hp <= LowHpThreshold)
-        {
-            // HP rendah: belanjakan gold untuk memperkuat board
-            for (var i = 0; i < state.Shop.AvailableCount; i++)
-            {
-                var hero = state.Shop.Slots[i];
-                if (hero != null && player.Gold >= hero.Cost)
-                {
-                    return Decision.Buy(i, $"Low HP {player.Hp}: spend to strengthen");
-                }
-            }
-
-            return Decision.Refresh($"Low HP {player.Hp}, board weak: roll");
-        }
-
-        return Decision.None(reason);
     }
+
+    internal static int BuildScore(GameState state) => SynergyDecision.Score(state, HeroDefs);
+    internal static IReadOnlyList<string> MissingSynergies(GameState state) =>
+        SynergyDecision.MissingSynergies(state, HeroDefs);
 }

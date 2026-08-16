@@ -122,8 +122,13 @@ MCG_AutoPlay/
 │   ├── Decision.cs         # Keputusan sebagai aksi konkret
 │   └── ActionExecutor.cs   # Decision -> Game API (via BattleBridgeHelper)
 │
-├── AI/                     # Decision engine (PRD Phase 7/8)
-│   └── DecisionEngine.cs   # Economy AI dasar (interest / HP rendah / roll)
+├── AI/                     # Decision engine (PRD Phase 7-10)
+│   ├── DecisionEngine.cs   # Orkestrasi keputusan
+│   ├── EconomyDecision.cs  # Aksi ekonomi + skor (Phase 8)
+│   ├── EconomyScoring.cs   # Scoring Roll/LevelUp/Save/Buy (Phase 8)
+│   ├── HeroDefinition.cs   # Meta hero (Phase 9)
+│   ├── ShopDecision.cs     # Evaluasi & skor hero shop (Phase 9)
+│   └── SynergyDecision.cs  # Deteksi synergy + build score (Phase 10)
 │
 ├── Tests/                  # Proyek test tanpa MelonLoader (net8)
 │   ├── Core.Tests/         # Validasi Core/ (plain C#)
