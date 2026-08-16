@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "wzpiW2MlgT8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ASUS\\Downloads\\Compressed\\MCGGAutoPlayBot-main\\MCG_AutoPlay.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.36\\microsoft.netcore.app.ref.6.0.36.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.36\\microsoft.windowsdesktop.app.ref.6.0.36.nupkg.sha512",
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.36\\microsoft.aspnetcore.app.ref.6.0.36.nupkg.sha512"
+  ],
+  "logs": []
+}
