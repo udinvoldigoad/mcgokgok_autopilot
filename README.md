@@ -39,7 +39,7 @@ A MelonLoader mod for **Magic Chess: Go Go** (`mulonggame/MagicChessGoGo`) that 
 The post-build target in the `.csproj` copies the DLL to `<GamePath>\Mods\` automatically on every build:
 
 ```xml
-<GamePath>E:\MagicChessGoGo</GamePath>
+<GamePath>D:\MagicChessGoGo</GamePath>
 ```
 
 Update this path in `MCG_AutoPlay.csproj` to match your install location before building.
