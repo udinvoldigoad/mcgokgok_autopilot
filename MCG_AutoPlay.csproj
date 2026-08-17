@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
-    <GamePath>D:\MagicChessGoGo</GamePath>
+    <GamePath>D:\MagicChessGoGo\MagicChessGoGo</GamePath>
     <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
@@ -37,11 +37,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\**\*.cs" Link="Core\%(Filename)%(Extension)" />
-    <Compile Include="Infrastructure\**\*.cs" Link="Infrastructure\%(Filename)%(Extension)" />
-    <Compile Include="Game\**\*.cs" Link="Game\%(Filename)%(Extension)" />
-    <Compile Include="Actions\**\*.cs" Link="Actions\%(Filename)%(Extension)" />
-    <Compile Include="AI\**\*.cs" Link="AI\%(Filename)%(Extension)" />
+    <Compile Remove="Tests\**\*.cs" />
   </ItemGroup>
   <Target Name="CopyToMods" AfterTargets="Build">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GamePath)\Mods\" SkipUnchangedFiles="true" />
