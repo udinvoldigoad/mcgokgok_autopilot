@@ -12,6 +12,17 @@ internal static class AutoPlayController
 
     internal static bool IsBattleActive => _battleActive;
 
+    internal static ulong LocalAccId
+    {
+        get
+        {
+            if (_localAccId != 0)
+                return _localAccId;
+            _localAccId = ResolveLocalAccId();
+            return _localAccId;
+        }
+    }
+
     internal static void OnBattleStart()
     {
         if (!AutoPlayConfig.Enabled.Value)
@@ -54,6 +65,31 @@ internal static class AutoPlayController
 
         NotifyChessAiPrepare();
         RunDirectApiPass("prepare");
+
+        if (AutoPlayConfig.LogGameState.Value)
+            LogGameState();
+    }
+
+    private static void LogGameState()
+    {
+        var state = Game.GameStateReader.Read();
+        AutoPlayWatch.Log($"[STATE] Round {state.RoundLabel} | HP {state.Player.Hp} | Gold {state.Player.Gold} | Level {state.Player.Level} | Exp {state.Player.Exp}");
+        AutoPlayWatch.Log($"[STATE] Board {state.TotalBoardHeroes} | Bench {state.TotalBenchHeroes} | Shop {state.Shop.AvailableCount} | Synergies {state.Synergies.Count}");
+
+        for (var i = 0; i < state.Shop.Slots.Count; i++)
+        {
+            var slot = state.Shop.Slots[i];
+            AutoPlayWatch.Log($"  Shop slot={i} heroId={slot.Id} cost={slot.Cost} star={slot.Star}");
+        }
+
+        foreach (var board in state.Board.Heroes)
+            AutoPlayWatch.Log($"  Board heroId={board.Hero.Id} star={board.Hero.Star}");
+
+        foreach (var bench in state.Bench.Heroes)
+            AutoPlayWatch.Log($"  Bench heroId={bench.Id} star={bench.Star}");
+
+        foreach (var syn in state.Synergies)
+            AutoPlayWatch.Log($"  Synergy id={syn.Name} count={syn.Current} req={syn.Required}");
     }
 
     internal static void OnFightCountdown()

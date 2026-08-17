@@ -12,6 +12,7 @@ internal static class AutoPlayConfig
     internal static MelonPreferences_Entry<bool> ForceAutoDeploy = null!;
     internal static MelonPreferences_Entry<bool> VerboseWatch = null!;
     internal static MelonPreferences_Entry<int> TickMs = null!;
+    internal static MelonPreferences_Entry<bool> LogGameState = null!;
 
     internal static void Init()
     {
@@ -21,5 +22,6 @@ internal static class AutoPlayConfig
         ForceAutoDeploy = Cat.CreateEntry("ForceAutoDeploy", true, "Force auto board placement each prepare phase");
         VerboseWatch = Cat.CreateEntry("VerboseWatch", true, "Log shop/deploy/GoGo actions to MelonLoader console");
         TickMs = Cat.CreateEntry("TickMs", 150, "AI tick interval in milliseconds");
+        LogGameState = Cat.CreateEntry("LogGameState", false, "OBSERVE: log parsed GameState each prepare phase (no actions)");
     }
 }

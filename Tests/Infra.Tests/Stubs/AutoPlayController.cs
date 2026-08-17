@@ -4,6 +4,7 @@ namespace MCG_AutoPlay;
 internal static class AutoPlayController
 {
     internal static bool IsBattleActive => true;
+    internal static ulong LocalAccId => 123456789;
     internal static string GetRoundLabel() => "8-2";
     internal static int GetCurrentRoundForLog() => 2;
 }
