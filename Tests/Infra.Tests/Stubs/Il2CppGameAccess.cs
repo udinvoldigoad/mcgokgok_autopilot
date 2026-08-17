@@ -25,6 +25,15 @@ internal static class Il2CppGameAccess
         return instance.GetType().GetMethod(methodName, flags)?.Invoke(instance, args);
     }
 
+    internal static object? InvokeStatic(string typeName, string methodName, params object?[] args)
+    {
+        var type = Type.GetType(typeName);
+        if (type == null)
+            return null;
+        const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+        return type.GetMethod(methodName, flags)?.Invoke(null, args);
+    }
+
     internal static object? GetMemberValue(object? instance, string memberName)
     {
         if (instance == null)

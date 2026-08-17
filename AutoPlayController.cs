@@ -73,6 +73,7 @@ internal static class AutoPlayController
     private static void LogGameState()
     {
         var state = Game.GameStateReader.Read();
+        AutoPlayWatch.Log($"[STATE] {Game.GameStateReader.DebugInfo}");
         AutoPlayWatch.Log($"[STATE] Round {state.RoundLabel} | HP {state.Player.Hp} | Gold {state.Player.Gold} | Level {state.Player.Level} | Exp {state.Player.Exp}");
         AutoPlayWatch.Log($"[STATE] Board {state.TotalBoardHeroes} | Bench {state.TotalBenchHeroes} | Shop {state.Shop.AvailableCount} | Synergies {state.Synergies.Count}");
 
