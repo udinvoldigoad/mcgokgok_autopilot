@@ -9,6 +9,9 @@ internal static class AutoPlayController
     private static bool _aiRegistered;
     private static int _lastLoggedRound = -1;
     private static DateTime _lastDirectApiTick = DateTime.MinValue;
+    private static readonly Random _rng = new();
+    private static int _humanAccumMs;
+    private static int _humanNextDriveMs = -1;
 
     internal static bool IsBattleActive => _battleActive;
 
@@ -32,6 +35,8 @@ internal static class AutoPlayController
         _aiRegistered = false;
         _lastLoggedRound = -1;
         _localAccId = ResolveLocalAccId();
+        _humanAccumMs = 0;
+        _humanNextDriveMs = -1;
         AutoPlayWatch.Status($"Battle started — Tier 3 autopilot engaging (acc={_localAccId})");
         EnsureAutopilot("StartBattle");
     }
@@ -109,6 +114,42 @@ internal static class AutoPlayController
         if (!_aiRegistered)
             EnsureAutopilot("Tick");
 
+        if (AutoPlayConfig.HumanizeActions.Value)
+        {
+            // Pacing manusia: kumpulkan delta, gerakkan AI hanya saat melewati
+            // jeda acak (HumanMinMs..HumanMaxMs) — bukan aksi instan tiap frame.
+            _humanAccumMs += deltaMs;
+            if (_humanNextDriveMs < 0)
+                _humanNextDriveMs = NextHumanDelayMs();
+
+            if (_humanAccumMs >= _humanNextDriveMs)
+            {
+                var passMs = _humanAccumMs;
+                _humanAccumMs = 0;
+                _humanNextDriveMs = NextHumanDelayMs();
+                DriveMca(passMs);
+            }
+        }
+        else
+        {
+            DriveMca(deltaMs);
+        }
+
+        if (IsPreparePhase())
+            RunDirectApiPass("tick");
+    }
+
+    private static int NextHumanDelayMs()
+    {
+        var min = AutoPlayConfig.HumanMinMs.Value;
+        var max = AutoPlayConfig.HumanMaxMs.Value;
+        if (max <= min)
+            return min;
+        return _rng.Next(min, max + 1);
+    }
+
+    private static void DriveMca(int deltaMs)
+    {
         var aiMgr = GetAiManager();
         if (aiMgr != null)
         {
@@ -121,9 +162,6 @@ internal static class AutoPlayController
                 Il2CppGameAccess.Invoke(chessAi, "LogicUpdate", deltaMs);
             }
         }
-
-        if (IsPreparePhase())
-            RunDirectApiPass("tick");
     }
 
     internal static bool ShouldLogApi(object? apiInstance)
@@ -226,7 +264,7 @@ internal static class AutoPlayController
 
     private static void RunDirectApiPass(string source)
     {
-        if ((DateTime.UtcNow - _lastDirectApiTick).TotalMilliseconds < 400)
+        if ((DateTime.UtcNow - _lastDirectApiTick).TotalMilliseconds < (AutoPlayConfig.HumanizeActions.Value ? NextHumanDelayMs() : 400))
             return;
 
         _lastDirectApiTick = DateTime.UtcNow;
